@@ -174,26 +174,28 @@ class Server {
     */
     public function getMap($method,$uri) {
         $extension = $this->request->getExtension();
-        if ($this->hasExtension($extension))
+        if( $extension && !$this->hasExtension($extension) )
         {
-            $maps = $this->map[$method];
-            if(count($maps) < 1) { return false; }
-            foreach($maps as $pattern=>$class) {
-                $parts = explode("/",$pattern) ;
-                $map = array() ;
-                foreach($parts as $part) {
-                    if(isset($part[0]) && $part[0] == ":" && $part[1] == "?") {
-                        $map[] = "?[^/]*";
-                    } else if(isset($part[0]) && $part[0] == ":") {
-                        $map[] = "[^/]+";
-                    } else {
-                        $map[] = $part;
-                    }
+            return false;
+        }
+
+        $maps = $this->map[$method];
+        if(count($maps) < 1) { return false; }
+        foreach($maps as $pattern=>$class) {
+            $parts = explode("/",$pattern) ;
+            $map = array() ;
+            foreach($parts as $part) {
+                if(isset($part[0]) && $part[0] == ":" && $part[1] == "?") {
+                    $map[] = "?[^/]*";
+                } else if(isset($part[0]) && $part[0] == ":") {
+                    $map[] = "[^/]+";
+                } else {
+                    $map[] = $part;
                 }
-                if(preg_match("%^".implode("/", $map ).".".$extension."$%",$uri) ) {
-                    $this->setMatch($parts);
-                    return $class ;
-                }
+            }
+            if(preg_match("%^".implode("/", $map ).(!$extension?"":".".$extension)."$%",$uri) ) {
+                $this->setMatch($parts);
+                return $class ;
             }
         }
         return false ;
