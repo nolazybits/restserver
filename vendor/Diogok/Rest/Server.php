@@ -15,20 +15,27 @@ class Server {
     private $baseUrl ; 
     private $query ;
 
+    /**
+     * Contains the string extensions <br/>
+     * Default is array('html')
+     * @var \array
+     */
+    private $extensions;
     private $map ;
     private $matched ;
     private $params ;
     private $stack ;
 
     /**
-     * Contructor of RestServer
+     * Constructor
      * @param string $query Optional query to be treat as the URL
-     * @return RestServer $rest;
+     * @return \Diogok\Rest\Server $rest;
     */
     public function __construct($query=null) {
         $this->request = new Request($this); // Request handler
         $this->response = new Response($this); // Response holder
         $this->authenticator = new Authenticator($this); // Authenticator holder
+        $this->extensions = array();
 
         if(isset($_SERVER["HTTP_HOST"])) {
             $this->baseUrl = "http://".$_SERVER["HTTP_HOST"].dirname($_SERVER["SCRIPT_NAME"]);
@@ -41,6 +48,39 @@ class Server {
         $this->getRequest()->setURI($this->query);
 
         $this->matched = false;
+    }
+
+    public function addExtension($extension)
+    {
+        $this->extensions[$extension] = true;
+    }
+
+    public function removeExtension($extension)
+    {
+        unset($this->extensions[$extension]);
+    }
+
+    public function hasExtension($extension)
+    {
+        return array_key_exists($extension, $this->extensions);
+    }
+
+    public function addExtensions($extensions)
+    {
+        foreach( $extensions as $extension )
+        {
+            $this->extensions[$extension] = true;
+        }
+    }
+
+    public function clearExtensions($extensions)
+    {
+        $this->extensions = array();
+    }
+
+    public function getExtensions()
+    {
+        return array_values($this->extensions);
     }
 
     /**
@@ -76,11 +116,10 @@ class Server {
     }
 
     /**
-    * Set the URL to be handle or part of it
-    * @param mixed $value The url
-    * @param int $k the part of the url to change
-    * @return \Diogok\Rest\Server
-    */
+     * Set the URL to be handle or part of it
+     * @param mixed $value The url
+     * @return \Diogok\Rest\Server
+     */
     public function setQuery($value) {
         $this->getRequest()->setURI($value);
         return $this ;
@@ -134,23 +173,27 @@ class Server {
     * @return string
     */
     public function getMap($method,$uri) {
-        $maps = $this->map[$method];
-        if(count($maps) < 1) { return false; }
-        foreach($maps as $pattern=>$class) {
-            $parts = explode("/",$pattern) ;
-            $map = array() ;
-            foreach($parts as $part) {
-                if(isset($part[0]) && $part[0] == ":" && $part[1] == "?") {
-                    $map[] = "?[^/]*";
-                } else if(isset($part[0]) && $part[0] == ":") {
-                    $map[] = "[^/]+";
-                } else {
-                    $map[] = $part;
+        $extension = $this->request->getExtension();
+        if ($this->hasExtension($extension))
+        {
+            $maps = $this->map[$method];
+            if(count($maps) < 1) { return false; }
+            foreach($maps as $pattern=>$class) {
+                $parts = explode("/",$pattern) ;
+                $map = array() ;
+                foreach($parts as $part) {
+                    if(isset($part[0]) && $part[0] == ":" && $part[1] == "?") {
+                        $map[] = "?[^/]*";
+                    } else if(isset($part[0]) && $part[0] == ":") {
+                        $map[] = "[^/]+";
+                    } else {
+                        $map[] = $part;
+                    }
                 }
-            }
-            if(preg_match("%^".implode("/", $map )."$%",$uri) ) {
-                $this->setMatch($parts);
-                return $class ;
+                if(preg_match("%^".implode("/", $map ).".".$extension."$%",$uri) ) {
+                    $this->setMatch($parts);
+                    return $class ;
+                }
             }
         }
         return false ;
