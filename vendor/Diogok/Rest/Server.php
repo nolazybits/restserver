@@ -12,6 +12,18 @@ class Server {
     private $request ;
     private $authenticator ;
 
+    /**
+     * array of Controllers which will be execute before the mapped Controller call
+     * @var array
+     */
+    private $pre_modules;
+
+    /**
+     * array of Controllers which will be execute after the mapped Controller call
+     * @var array
+     */
+    private $post_modules;
+
     private $baseUrl ; 
     private $query ;
 
@@ -31,13 +43,21 @@ class Server {
      * @param string $query Optional query to be treat as the URL
      * @return \Diogok\Rest\Server $rest;
     */
-    public function __construct($query=null) {
-        $this->request = new Request($this); // Request handler
-        $this->response = new Response($this); // Response holder
-        $this->authenticator = new Authenticator($this); // Authenticator holder
+    public function __construct($query=null)
+    {
+        //  Request handler
+        $this->request = new Request($this);
+        //  Response holder
+        $this->response = new Response($this);
+        //  Pre Modules
+        $this->pre_modules = array();
+        //  post modules
+        $this->post_modules = array();
+        //  extensions the server handles
         $this->extensions = array();
 
-        if(isset($_SERVER["HTTP_HOST"])) {
+        if(isset($_SERVER["HTTP_HOST"]))
+        {
             $this->baseUrl = "http://".$_SERVER["HTTP_HOST"].dirname($_SERVER["SCRIPT_NAME"]);
         }
 
@@ -50,21 +70,40 @@ class Server {
         $this->matched = false;
     }
 
+
+    /**
+     * Add an extension the server is handling
+     * @param string $extension
+     */
     public function addExtension($extension)
     {
         $this->extensions[$extension] = true;
     }
 
+    /**
+     * Remove an extension the server is handling
+     * @param string$extension
+     */
     public function removeExtension($extension)
     {
         unset($this->extensions[$extension]);
     }
 
+    /**
+     * Check if the extension is handle by the server
+     * @param string $extension
+     * @return bool
+     */
     public function hasExtension($extension)
     {
         return array_key_exists($extension, $this->extensions);
     }
 
+    /**
+     * Add multiple extensions at once.<br />
+     * The array to pass is a indexed array.
+     * @param array $extensions
+     */
     public function addExtensions($extensions)
     {
         foreach( $extensions as $extension )
@@ -73,11 +112,18 @@ class Server {
         }
     }
 
-    public function clearExtensions($extensions)
+    /**
+     * Remove all the extensions from the server
+     */
+    public function clearExtensions()
     {
         $this->extensions = array();
     }
 
+    /**
+     * Returns an indexed array (sorting not important) of extensions handle by the server
+     * @return array
+     */
     public function getExtensions()
     {
         return array_values($this->extensions);
@@ -89,7 +135,8 @@ class Server {
     * @param mixed $value The content of the parameter
     * @return \Diogok\Rest\Server
     */
-    public function setParameter($key,$value) {
+    public function setParameter($key,$value)
+    {
         $this->params[$key] = $value ;
         return $this ;
     }
@@ -99,18 +146,20 @@ class Server {
     * @param mixed $key The parameter identifier
     * @return mixed
     */
-    public function getParameter($key) {
+    public function getParameter($key)
+    {
         return $this->params[$key];
     }
 
     /** 
     * Maps a Method and URL for a Class
     * @param string $method The method to be associated
-    * @param string $uri The URL to be accossiated
+    * @param string $uri The URL to be associated
     * @param string $class The name of the class to be called, it must implement RestAction
     * @return \Diogok\Rest\Server
     */
-    public function addMap($method,$uri,$class) {
+    public function addMap($method,$uri,$class)
+    {
         $this->map[$method][$uri] = $class ;
         return $this ;
     }
@@ -120,7 +169,8 @@ class Server {
      * @param mixed $value The url
      * @return \Diogok\Rest\Server
      */
-    public function setQuery($value) {
+    public function setQuery($value)
+    {
         $this->getRequest()->setURI($value);
         return $this ;
     }
@@ -130,7 +180,8 @@ class Server {
     * @param $k uri part
     * @return string
     **/
-    public function getQuery($k=null) { 
+    public function getQuery($k=null)
+    {
         return $this->getRequest()->getURI($k);
     }  
 
@@ -138,7 +189,8 @@ class Server {
     * Get the baseurl, based on website location (eg. localhost/website or website.com/);
     * @return string
     **/
-    public function getBaseUrl() {
+    public function getBaseUrl()
+    {
         return $this->baseUrl ;
     }
 
@@ -146,7 +198,8 @@ class Server {
     * Get the Response handler object
     * @return \Diogok\Rest\Response
     */
-    public function getResponse() {
+    public function getResponse()
+    {
         return $this->response ;
     }
 
@@ -154,7 +207,8 @@ class Server {
      * Get the Request handler object
     * @return \Diogok\Rest\Request
     */
-    public function getRequest() {
+    public function getRequest()
+    {
         return $this->request ;
     }
 
@@ -162,7 +216,8 @@ class Server {
      * Get the Authentication handler object
     * @return \Diogok\Rest\Authenticator
     */
-    public function getAuthenticator() {
+    public function getAuthenticator()
+    {
         return $this->authenticator ;
     }
 
@@ -172,7 +227,9 @@ class Server {
     * @param string $uri
     * @return string
     */
-    public function getMap($method,$uri) {
+    public function getMap($method,$uri)
+    {
+        //  check the server handle the requested extension
         $extension = $this->request->getExtension();
         if( $extension && !$this->hasExtension($extension) )
         {
@@ -233,9 +290,9 @@ class Server {
     * @return string $responseContent
     */
     public function execute() {
-        if(!$this->getAuthenticator()->tryAuthenticate()) {
+/*        if(!$this->getAuthenticator()->tryAuthenticate()) {
             return $this->show(); // If auth is required and its not ok, response is 401
-        }
+        }*/
 
         // This is the class name to call
         $responseClass = $this->getMap($this->getRequest()->getMethod(),$this->getQuery()) ;

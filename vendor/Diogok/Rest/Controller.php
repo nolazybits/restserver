@@ -11,7 +11,7 @@ interface Controller extends Action {
        * @param \Diogok\Rest\Server $restServer
        * @return \Diogok\Rest\Action restView or Controller
      * */
-    function execute(Server $restServer) ;
+    function execute(\Diogok\Rest\Server $restServer) ;
 }
 
 ?>
