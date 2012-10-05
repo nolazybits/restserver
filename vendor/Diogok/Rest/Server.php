@@ -2,41 +2,27 @@
 /**
 * Class Server
 * Is the front controller for mapping URL to controllers and dealing with Request/Response and Headers
-* Made with Restful webservices in mind.
+* Made with Restful web services in mind.
 * By Diogo Souza da Silva <manifesto@manifesto.blog.br>
 */
 namespace Diogok\Rest;
-class Server {
+class Server
+    extends \Diogok\Rest\Extras
+{
 
     private $response ;
     private $request ;
     private $authenticator ;
 
-    /**
-     * array of Controllers which will be execute before the mapped Controller call
-     * @var array
-     */
-    private $pre_modules;
-
-    /**
-     * array of Controllers which will be execute after the mapped Controller call
-     * @var array
-     */
-    private $post_modules;
-
     private $baseUrl ; 
     private $query ;
 
-    /**
-     * Contains the string extensions <br/>
-     * Default is array('html')
-     * @var \array
-     */
-    private $extensions;
     private $map ;
     private $matched ;
     private $params ;
     private $stack ;
+
+    private $pre_map_modules;
 
     /**
      * Constructor
@@ -49,84 +35,24 @@ class Server {
         $this->request = new Request($this);
         //  Response holder
         $this->response = new Response($this);
-        //  Pre Modules
-        $this->pre_modules = array();
-        //  post modules
-        $this->post_modules = array();
         //  extensions the server handles
         $this->extensions = array();
+        //  modules to be executed before mapping
+        $this->pre_map_modules = array();
 
+        //  set the base url
         if(isset($_SERVER["HTTP_HOST"]))
         {
             $this->baseUrl = "http://".$_SERVER["HTTP_HOST"].dirname($_SERVER["SCRIPT_NAME"]);
         }
 
-        // If will use custom URI or HTTP requested URI
+        //  If will use custom URI or HTTP requested URI
         if($query===null) $this->query = $this->getRequest()->getRequestURI() ;
         else $this->query = $query ;
 
         $this->getRequest()->setURI($this->query);
 
         $this->matched = false;
-    }
-
-
-    /**
-     * Add an extension the server is handling
-     * @param string $extension
-     */
-    public function addExtension($extension)
-    {
-        $this->extensions[$extension] = true;
-    }
-
-    /**
-     * Remove an extension the server is handling
-     * @param string$extension
-     */
-    public function removeExtension($extension)
-    {
-        unset($this->extensions[$extension]);
-    }
-
-    /**
-     * Check if the extension is handle by the server
-     * @param string $extension
-     * @return bool
-     */
-    public function hasExtension($extension)
-    {
-        return array_key_exists($extension, $this->extensions);
-    }
-
-    /**
-     * Add multiple extensions at once.<br />
-     * The array to pass is a indexed array.
-     * @param array $extensions
-     */
-    public function addExtensions($extensions)
-    {
-        foreach( $extensions as $extension )
-        {
-            $this->extensions[$extension] = true;
-        }
-    }
-
-    /**
-     * Remove all the extensions from the server
-     */
-    public function clearExtensions()
-    {
-        $this->extensions = array();
-    }
-
-    /**
-     * Returns an indexed array (sorting not important) of extensions handle by the server
-     * @return array
-     */
-    public function getExtensions()
-    {
-        return array_values($this->extensions);
     }
 
     /**
@@ -151,19 +77,6 @@ class Server {
         return $this->params[$key];
     }
 
-    /** 
-    * Maps a Method and URL for a Class
-    * @param string $method The method to be associated
-    * @param string $uri The URL to be associated
-    * @param string $class The name of the class to be called, it must implement RestAction
-    * @return \Diogok\Rest\Server
-    */
-    public function addMap($method,$uri,$class)
-    {
-        $this->map[$method][$uri] = $class ;
-        return $this ;
-    }
-
     /**
      * Set the URL to be handle or part of it
      * @param mixed $value The url
@@ -177,8 +90,8 @@ class Server {
 
     /**
     * Get the URL or part of it, depreciated by RestRequest::getURI();
-    * @param $k uri part
-    * @return string
+    * @param \string $k uri part
+    * @return \string
     **/
     public function getQuery($k=null)
     {
@@ -222,10 +135,21 @@ class Server {
     }
 
     /**
+     * Maps a Method and URL for a Class
+     * @param \Diogok\Rest\MapResource $map_resource defines a uri mapping
+     * @return \Diogok\Rest\Server
+     */
+    public function addMap( $map_resource )
+    {
+        $this->map[$map_resource->getMethod()][$map_resource->getUri()] = $map_resource;
+        return $this ;
+    }
+
+    /**
     * Get the class for specified method and uri
     * @param string $method
     * @param string $uri
-    * @return string
+    * @return \Diogok\Rest\MapResource
     */
     public function getMap($method,$uri)
     {
@@ -238,21 +162,30 @@ class Server {
 
         $maps = $this->map[$method];
         if(count($maps) < 1) { return false; }
-        foreach($maps as $pattern=>$class) {
+        foreach($maps as $pattern=>$mapResource)
+        {
             $parts = explode("/",$pattern) ;
             $map = array() ;
-            foreach($parts as $part) {
-                if(isset($part[0]) && $part[0] == ":" && $part[1] == "?") {
+            foreach($parts as $part)
+            {
+                if(isset($part[0]) && $part[0] == ":" && $part[1] == "?")
+                {
                     $map[] = "?[^/]*";
-                } else if(isset($part[0]) && $part[0] == ":") {
+                }
+                else if(isset($part[0]) && $part[0] == ":")
+                {
                     $map[] = "[^/]+";
-                } else {
+                }
+                else
+                {
                     $map[] = $part;
                 }
             }
-            if(preg_match("%^".implode("/", $map ).(!$extension?"":".".$extension)."$%",$uri) ) {
+        //  TODO check for map specific extension
+            if(preg_match("%^".implode("/", $map ).(!$extension?"":".".$extension)."$%",$uri) )
+            {
                 $this->setMatch($parts);
-                return $class ;
+                return $mapResource;
             }
         }
         return false ;
@@ -289,50 +222,116 @@ class Server {
     * Run the Server to handle the request and prepare the response
     * @return string $responseContent
     */
-    public function execute() {
-/*        if(!$this->getAuthenticator()->tryAuthenticate()) {
-            return $this->show(); // If auth is required and its not ok, response is 401
-        }*/
+    public function execute()
+    {
+        //  server modules executed
+        $modules = $this->getPreModules();
+        $this->executeModules($modules);
 
-        // This is the class name to call
-        $responseClass = $this->getMap($this->getRequest()->getMethod(),$this->getQuery()) ;
-        $responseMethod = null;
+        //  This is the class name to call
+        $mapResource = $this->getMap($this->getRequest()->getMethod(),$this->getQuery()) ;
+        $responseClass = null;
+        if( $mapResource )
+        {
+            $responseClass = $mapResource->getClass();
+        }
 
-        if(!$responseClass) { // If no class was found, response is 404
+        //  If no class was found, response is 404
+        if(!$responseClass)
+        {
             $this->getResponse()->cleanHeader();
             $this->getResponse()->addHeader("HTTP/1.1 404 Not found");
             $this->getResponse()->setResponse("HTTP/1.1 404 NOT FOUND");
             return $this->show();
         }
 
-        // In case a specific method should be called
-        if(is_string($responseClass) && count($parts = explode("::",$responseClass)) > 1) {
-            $responseClass = $parts[0];
-            $responseMethod = $parts[1];
+        //  resource modules executed
+        $modules = $mapResource->getPreModules();
+        if( !empty($modules) )
+        {
+            $this->executeModules($modules);
         }
 
-        $responseObject = new \stdClass() ;
-
-        if(is_callable($responseClass)) {
-            $responseObject = $responseClass; 
-        } else {
-            $responseObject = new $responseClass;
-        }
-
-        return $this->call($responseObject,$responseMethod)->show(); // Call the class and return the response
+        //  execute the main controller
+        return $this->executeController($responseClass);
     }
 
+    private function executeModules( $modules )
+    {
+        foreach($modules as $module)
+        {
+            $moduleMethod = null;
+            // In case a specific method should be called
+            if(is_string($module) && count($parts = explode("::",$module)) > 1)
+            {
+                $module = $parts[0];
+                $moduleMethod = $parts[1];
+            }
+
+            if(is_callable($module))
+            {
+                $moduleObject = $module;
+            }
+            else
+            {
+                $moduleObject = new $module;
+            }
+
+            $this->call($moduleObject,$moduleMethod)->show();
+        }
+    }
+
+    private function executeController( $class )
+    {
+        $controllerMethod = null;
+        // In case a specific method should be called
+        if(is_string($class) && count($parts = explode("::",$class)) > 1)
+        {
+            $class = $parts[0];
+            $controllerMethod = $parts[1];
+        }
+
+        if(is_callable($class))
+        {
+            $controllerObject = $class;
+        }
+        else
+        {
+            $controllerObject = new $class;
+        }
+
+        return $this->call($controllerObject,$controllerMethod)->show();
+    }
+
+    /**
+     * @param \Diogok\Rest\Controller|\Diogok\Rest\View|\string $class
+     * @param null $method
+     * @return Server
+     * @throws \Exception
+     */
     private function call($class,$method=null) {             
         $this->stack[] = get_class($class) ;
-        if(is_callable($class)) {
+
+        if(is_callable($class))
+        {
             $class = $class($this);
-        } else if($method != null) {
+        }
+        else if($method != null)
+        {
             $class = $class->$method($this);
-        } else if($class instanceof View) { // If is a view, call Show($restServer)
+        }
+        //  If is a view, call Show($restServer)
+        else if($class instanceof \Diogok\Rest\View)
+        {
             $class = $class->show($this);
-        } else if($class instanceof Controller)  {  //If is a controller, call execute($restServer)
+        }
+        //  If is a controller, call execute($restServer)
+        else if($class instanceof \Diogok\Rest\Controller)
+        {
             $class = $class->execute($this);
-        } else {
+        }
+        else
+        {
             Throw new \Exception(get_class($class)." is not a RestAction");
         }
 
