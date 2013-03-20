@@ -23,7 +23,7 @@ class ExceptionHandler extends BaseExceptionHandler
         $error->message = $exception->getMessage();
         array_push($output['errors'], $error );
 
-        if (REST_DEBUGING === true)
+        if (REST_DEBUGGING === true)
         {
             $debugging = ob_get_contents();
             if (!empty($debugging))
