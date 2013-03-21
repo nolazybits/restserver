@@ -1,5 +1,5 @@
 <?php
-namespace Csod\Rest;
+namespace Diogok\Rest\Responses;
 /**
 * A formatted result object returned to the client from a REST request
 */
@@ -31,7 +31,8 @@ class ResponseData
      */
     public function clear()
     {
-        $this->code = \Csod\Rest\Http\StatusCodes::SUCCESS_OK;
+        $this->code = \Diogok\Rest\Http\StatusCodes::SUCCESS_OK;
+        $this->data = null;
     }
 }
 ?>

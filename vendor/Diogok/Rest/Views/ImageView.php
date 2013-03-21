@@ -1,5 +1,5 @@
 <?php
-namespace Csod\Rest;
+namespace Diogok\Rest\Views;
 
 class ImageView
     implements \Diogok\Rest\View
@@ -16,11 +16,11 @@ class ImageView
         $response = isset($response) ? $response : new ResponseData();
 
         // output the response header
-        header(\Csod\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);
+        header(\Diogok\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);
 
         if (!is_null($response->data))
         {
-            header (\Csod\Rest\Http\HeaderConstants::CONTENT_TYPE_PNG);
+            header (\Diogok\Rest\Http\HeaderConstants::CONTENT_TYPE_PNG);
 
             imagepng($response->data);
             imagedestroy($response->data);

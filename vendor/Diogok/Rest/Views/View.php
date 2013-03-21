@@ -1,5 +1,5 @@
 <?php
-namespace Csod\Rest;
+namespace Diogok\Rest\Views;
 
 class View
     implements \Diogok\Rest\View
@@ -21,7 +21,7 @@ class View
         $response = isset($response) ? $response : new ResponseData();
 
         // output the response header
-        header(\Csod\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);
+        header(\Diogok\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);
 
         if (!is_null($response->data))
         {
@@ -52,7 +52,7 @@ class View
     public function html(\Diogok\Rest\Server $rest)
     {
         $response = $rest->getResponse();
-        $response->addHeader(\Csod\Rest\Http\HeaderConstants::CONTENT_TYPE_HTML.\Csod\Rest\Http\HeaderConstants::CHARSET_UTF8);
+        $response->addHeader(\Diogok\Rest\Http\HeaderConstants::CONTENT_TYPE_HTML.\Diogok\Rest\Http\HeaderConstants::CHARSET_UTF8);
 
         if (is_object($this->body->data))
         {
@@ -69,13 +69,13 @@ class View
 
 
     /**
-     * @param \Diogok\Rest\Server $rest
+     * @param \Diogok\Rest\Server $server
      * @return \Diogok\Rest\Server
      */
     public function json(\Diogok\Rest\Server $server)
     {
         $response = $server->getResponse();
-        $response->addHeader(\Csod\Rest\Http\HeaderConstants::CONTENT_TYPE_JSON.\Csod\Rest\Http\HeaderConstants::CHARSET_UTF8);
+        $response->addHeader(\Diogok\Rest\Http\HeaderConstants::CONTENT_TYPE_JSON.\Diogok\Rest\Http\HeaderConstants::CHARSET_UTF8);
 
         $encoded_response = json_encode($this->body);
 
