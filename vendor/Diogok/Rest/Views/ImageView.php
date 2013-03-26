@@ -1,6 +1,9 @@
 <?php
 namespace Diogok\Rest\Views;
 
+/**
+ *
+ */
 class ImageView
     implements \Diogok\Rest\View
 {
@@ -12,18 +15,16 @@ class ImageView
     public function show(\Diogok\Rest\Server $rest)
     {
         // get the result value object to output
-        $response = @$rest->getParameter("response");
-        $response = isset($response) ? $response : new ResponseData();
+        $response_data = @$rest->getParameter("response");
+        $response_data = isset($response_data) ? $response_data : new \Diogok\Rest\Responses\ResponseData();
 
-        // output the response header
-        header(\Diogok\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);
+        $response = $rest->getResponse();
+        $response->addHeader(\Diogok\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);
 
-        if (!is_null($response->data))
+        if (!is_null($response_data->data))
         {
-            header (\Diogok\Rest\Http\HeaderConstants::CONTENT_TYPE_PNG);
-
-            imagepng($response->data);
-            imagedestroy($response->data);
+            $response->addHeader(\Diogok\Rest\Http\HeaderConstants::CONTENT_TYPE_PNG);
+            $response->setResponse($response_data->data);
         }
 
         return $rest;
