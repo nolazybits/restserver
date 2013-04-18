@@ -18,7 +18,7 @@ class View
     {
         // get the result value object to output
         $response = @$rest->getParameter("response");
-        $response = isset($response) ? $response : new ResponseData();
+        $response = isset($response) ? $response : new \Diogok\Rest\Responses\ResponseData();
 
         // output the response header
         header(\Diogok\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);

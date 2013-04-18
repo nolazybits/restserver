@@ -26,6 +26,9 @@ class StatusCodes
     //  The server successfully processed the request, but is not returning any content.
     const SUCCESS_NO_CONTENT        = '204 No Content';
 
+    //  The server successfully processed the request, but is not returning any content.
+    const SUCCESS_REDIRECT            = '302 Found';
+
     //  The request cannot be fulfilled due to bad syntax.
     const ERROR_BAD_REQUEST         = '400 Bad Request';
 
