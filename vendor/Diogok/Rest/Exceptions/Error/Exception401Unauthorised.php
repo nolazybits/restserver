@@ -15,7 +15,7 @@ namespace Diogok\Rest\Exceptions\Error;
  * No authorization.
  * A valid API key was not provided with the request, so the API could not associate a user with the request.
  */
-class Exception104Unauthorised
+class Exception401Unauthorised
     extends \Diogok\Rest\Exceptions\RestException
 {
     /**

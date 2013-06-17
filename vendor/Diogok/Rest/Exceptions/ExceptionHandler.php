@@ -21,6 +21,21 @@ class ExceptionHandler extends BaseExceptionHandler
         $output['errors'] = array();
         $error = new \stdClass();
         $error->message = $exception->getMessage();
+
+        // put other public values if set, exclude the previous exception and debug messaging
+        foreach($exception as $key => $value)
+        {
+            if ($key == "previousException" || $key == "xdebug_message")
+            {
+                continue;
+            }
+
+            if (!is_null($value))
+            {
+                $error->$key = $value;
+            }
+        }
+
         array_push($output['errors'], $error );
 
         if (REST_DEBUGGING === true)
