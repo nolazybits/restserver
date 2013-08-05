@@ -11,6 +11,8 @@ class HeaderConstants
 {
     const HTTP_VERSION_1_1 = "HTTP/1.1 ";
 
+    const CONTENT_NO_CACHE = "Cache-Control: no-cache, no-store, must-revalidate; Pragma: no-cache; Expires: 0; ";
+
     const CONTENT_TYPE_HTML = "Content-Type: text/html; ";
     const CONTENT_TYPE_JSON = "Content-Type: application/json; ";
     const CONTENT_TYPE_PNG = "Content-Type: image/png; ";

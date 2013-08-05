@@ -20,6 +20,7 @@ class ImageView
 
         $response = $rest->getResponse();
         $response->addHeader(\Diogok\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);
+        $response->addHeader(\Diogok\Rest\Http\HeaderConstants::CONTENT_NO_CACHE);
 
         if (!is_null($response_data->data))
         {

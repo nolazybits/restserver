@@ -22,6 +22,7 @@ class View
 
         // output the response header
         header(\Diogok\Rest\Http\HeaderConstants::HTTP_VERSION_1_1.$response->code);
+        $response->addHeader(\Diogok\Rest\Http\HeaderConstants::CONTENT_NO_CACHE);
 
         if (!is_null($response->data))
         {
