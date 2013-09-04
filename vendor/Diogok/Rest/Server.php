@@ -274,7 +274,7 @@ class Server
             }
             else
             {
-                $moduleObject = new $module;
+                $moduleObject = new $module($this);
             }
 
             $this->call($moduleObject,$moduleMethod)->show();
@@ -297,7 +297,7 @@ class Server
         }
         else
         {
-            $controllerObject = new $class;
+            $controllerObject = new $class($this);
         }
 
         return $this->call($controllerObject,$controllerMethod)->show();
