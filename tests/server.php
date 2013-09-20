@@ -86,5 +86,3 @@ if($r->getQuery(2) == "restricted") {
 }
 
 echo $r->execute();
-
-?>

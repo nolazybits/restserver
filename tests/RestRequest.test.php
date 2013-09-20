@@ -56,5 +56,3 @@ class RestRequestTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

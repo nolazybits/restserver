@@ -34,4 +34,3 @@ class RestAuthenticatorTest extends PHPUnit_Framework_TestCase {
         
     }
 } 
-?>
