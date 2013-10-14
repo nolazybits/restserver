@@ -8,7 +8,7 @@
 namespace Rest\Exceptions\Error;
 
 /**
- * http://en.wikipedia.org/wiki/Http_status_codes#1xx_Informational
+ * http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_Error
  * The request cannot be fulfilled due to bad syntax.
  *
  * Invalid request.

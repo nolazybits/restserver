@@ -5,7 +5,7 @@ class View
     implements \Rest\View
 {
     /**
-     * @var stdClass
+     * @var \stdClass
      */
     protected $body;
 
@@ -99,17 +99,17 @@ class View
 
     /**
      * @param \Rest\Server $rest
-     * @return ResponseData|mixed
+     * @return \Rest\Responses\ResponseData|mixed
      */
     private function getResult(\Rest\Server $rest)
     {
         $response = $rest->getParameter("response");
-        return isset($response) ? $response : new ResponseData();
+        return isset($response) ? $response : new \Rest\Responses\ResponseData();
     }
 
     /**
      * Indents a flat JSON string to make it more human-readable.
-     * @param $json  The original JSON string to process.
+     * @param string $json  The original JSON string to process.
      * @return string  Indented version of the original JSON string.
      */
     private function indent($json)

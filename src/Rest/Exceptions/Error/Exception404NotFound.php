@@ -8,7 +8,7 @@
 namespace Rest\Exceptions\Error;
 
 /**
- * http://en.wikipedia.org/wiki/Http_status_codes#1xx_Informational
+ * http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_Error
  * The requested resource could not be found but may be available again in the future.
  * Subsequent requests by the client are permissible.
  *

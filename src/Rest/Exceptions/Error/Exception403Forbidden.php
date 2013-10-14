@@ -8,7 +8,7 @@
 namespace  Rest\Exceptions\Error;
 
 /**
- * http://en.wikipedia.org/wiki/Http_status_codes#1xx_Informational
+ * http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_Error
  * The request was a valid request, but the server is refusing to respond to it.
  * Unlike a 401 Unauthorized response, authenticating will make no difference.
  * On servers where authentication is required, this commonly means that the provided credentials were successfully

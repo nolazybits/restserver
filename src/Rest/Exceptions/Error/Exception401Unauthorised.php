@@ -8,7 +8,7 @@
 namespace Rest\Exceptions\Error;
 
 /**
- * http://en.wikipedia.org/wiki/Http_status_codes#1xx_Informational
+ * http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_Error
  * Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided.
  * The response must include a WWW-Authenticate header field containing a challenge applicable to the requested resource.
  *

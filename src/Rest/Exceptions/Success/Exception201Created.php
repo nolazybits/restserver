@@ -8,7 +8,7 @@
 namespace Rest\Exceptions\Success;
 
 /**
- * http://en.wikipedia.org/wiki/Http_status_codes#1xx_Informational
+ * http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success
  * The request has been fulfilled and resulted in a new resource being created.
  *
  * Success (for object creation).

@@ -7,7 +7,7 @@
 
 namespace Rest\Exceptions\Success;
 /**
- * http://en.wikipedia.org/wiki/Http_status_codes#1xx_Informational
+ * http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success
  * Standard response for successful HTTP requests.
  * The actual response will depend on the request method used.
  * In a GET request, the response will contain an entity corresponding to the requested resource.
