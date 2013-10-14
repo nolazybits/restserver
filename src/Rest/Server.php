@@ -31,6 +31,7 @@ class Server
     */
     public function __construct($query=null)
     {
+        parent::__construct();
         //  Request handler
         $this->request = new Request($this);
         //  Response holder

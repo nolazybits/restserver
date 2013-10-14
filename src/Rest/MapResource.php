@@ -35,11 +35,14 @@ class MapResource
      */
     public function __construct($method, $uri, $class, $options)
     {
+        parent::__construct();
         $this->method       = $method;
         $this->uri          = $uri;
         $this->class        = $class;
-        $this->addExtensions($extensions);
-        $this->addPreModules($pre_modules);
+
+        $this->addExtensions($options['extensions']);
+        $this->addPreModules($options['pre_modules']);
+//        $this->addPostModules($options['pre_modules']);
 //        $this->post_modules  = $post_modules;
     }
 

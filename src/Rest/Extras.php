@@ -23,6 +23,13 @@ abstract class Extras
      */
     private $post_modules;
 
+    public function __construct()
+    {
+        $this->extensions = array();
+        $this->pre_modules = array();
+        $this->post_modules = array();
+    }
+
     /**
      * Add an extension the server is handling
      * @param string $extension
@@ -58,6 +65,10 @@ abstract class Extras
      */
     public function addExtensions($extensions)
     {
+        if (is_null($extensions) )
+        {
+            return;
+        }
         foreach( $extensions as $extension )
         {
             $this->extensions[$extension] = true;
