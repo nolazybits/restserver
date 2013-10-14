@@ -1,5 +1,5 @@
 <?php
-namespace Rest\Modules;
+namespace Rest;
 
 /**
  * User: xavier
