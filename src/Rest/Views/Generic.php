@@ -28,7 +28,7 @@ class GenericView
       * @param \Rest\Server $rest
       * @return \Rest\Server
       */
-    function show(\Rest\Server $rest)
+    function execute(\Rest\Server $rest)
     {
         ob_start();
         extract($rest->getParameters());

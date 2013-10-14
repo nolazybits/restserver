@@ -1,5 +1,7 @@
 <?php
 namespace Rest;
+use Rest\Exceptions\Error\Exception404NotFound;
+use Rest\Exceptions\Error\Exception500InternalServerError;
 
 /**
 * Class Server
@@ -246,7 +248,10 @@ class Server
     {
         //  server modules executed
         $modules = $this->getPreModules();
-        $this->executeModules($modules);
+        if( !empty($modules) )
+        {
+            $this->executeModules($modules);
+        }
 
         //  check the server handle the requested extension
         $extension = $this->request->getExtension();
@@ -269,10 +274,11 @@ class Server
         //  If no class was found, response is 404
         if(!$responseClass)
         {
-            $this->getResponse()->cleanHeader();
+            throw new \Rest\Exceptions\Error\Exception404NotFound();
+/*            $this->getResponse()->cleanHeader();
             $this->getResponse()->addHeader("HTTP/1.1 404 Not found");
             $this->getResponse()->setResponse("HTTP/1.1 404 NOT FOUND");
-            return $this->show();
+            return $this->show();*/
         }
 
         //  resource modules executed
@@ -283,98 +289,95 @@ class Server
         }
 
         //  execute the main controller
-        return $this->executeController($responseClass);
+        $this->executeController($responseClass);
+
+        //  resource modules executed
+        $modules = $mapResource->getPostModules();
+        if( !empty($modules) )
+        {
+            $this->executeModules($modules);
+        }
+
+        //  server modules executed
+        $modules = $this->getPostModules();
+        if( !empty($modules) )
+        {
+            $this->executeModules($modules);
+        }
+
+        //  Call headers, if no yet done
+        if( !$this->getResponse()->headerSent() )
+        {
+            $this->getResponse()->showHeader();
+        }
+
+        return $this->getResponse()->getResponse();
     }
 
     private function executeModules( $modules )
     {
         foreach($modules as $module)
         {
-            $moduleMethod = null;
-            // In case a specific method should be called
-            if(is_string($module) && count($parts = explode("::",$module)) > 1)
-            {
-                $module = $parts[0];
-                $moduleMethod = $parts[1];
-            }
+            $this->executeController($module);
+        }
+    }
 
-            if(is_callable($module))
+    private function executeController( $response )
+    {
+        if( !is_string( $response ) && is_callable($response) )
+        {
+            $object = new \Rest\Controllers\Generic($response);
+            $method = "execute";
+        }
+        else if( is_string($response) )
+        {
+            $response = explode("::",$response);
+            if ( count($response) == 2)
             {
-                $moduleObject = $module;
+                $object =  new $response[0];
+                $method = $response[1];
             }
             else
             {
-                $moduleObject = new $module($this);
+                $object = new $response[0];
+                $method = "execute";
             }
-
-            $this->call($moduleObject,$moduleMethod)->show();
-        }
-    }
-
-    private function executeController( $class )
-    {
-        $controllerMethod = null;
-        // In case a specific method should be called
-        if(is_string($class) && count($parts = explode("::",$class)) > 1)
-        {
-            $class = $parts[0];
-            $controllerMethod = $parts[1];
         }
 
-        if(is_callable($class))
-        {
-            $controllerObject = $class;
-        }
-        else
-        {
-            $controllerObject = new $class($this);
-        }
+        $this->call($object,$method);
 
-        return $this->call($controllerObject,$controllerMethod)->show();
+        return $this;
     }
 
     /**
-     * @param \Rest\Controller|\Rest\View|\string $class
+     * @param $object
      * @param null $method
-     * @return Server
-     * @throws \Exception
+     * @throws \Rest\Exceptions\Error\Exception500InternalServerError
+     * @return \Rest\Server
      */
-    private function call($class,$method=null) {             
-        $this->stack[] = get_class($class) ;
-
-        if(is_callable($class))
+    private function call($object,$method)
+    {
+        $this->stack[] = get_class($object) ;
+        if( !($object instanceof Action) )
         {
-            $class = $class($this);
-        }
-        else if($method != null)
-        {
-            $class = $class->$method($this);
-        }
-        //  If is a view, call Show($restServer)
-        else if($class instanceof \Rest\View)
-        {
-            $class = $class->show($this);
-        }
-        //  If is a controller, call execute($restServer)
-        else if($class instanceof \Rest\Controller)
-        {
-            $class = $class->execute($this);
+            Throw new \Rest\Exceptions\Error\Exception500InternalServerError(get_class($object)." is not a Rest\\Action");
         }
         else
         {
-            Throw new \Exception(get_class($class)." is not a RestAction");
+            $class = $object->$method($this);
         }
 
-        if($class instanceof Action
-            && get_class($class) != $this->lastClass() ) {
-            return $this->call($class); // May have another class to follow the request
+        if($class instanceof Action && get_class($class) != $this->lastClass())
+        {
+            return $this->call($class,"execute"); // May have another class to follow the request
         }
-
-        return $this ;
+        return $this;
     }
 
-    private function show() {
-        if(!$this->getResponse()->headerSent()) {
+    private function show()
+    {
+        if( !$this->getResponse()->headerSent() )
+        {
             $this->getResponse()->showHeader(); // Call headers, if no yet
         }
         return $this->getResponse()->getResponse() ; // Return response content;

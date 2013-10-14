@@ -149,4 +149,60 @@ abstract class Extras
     {
         return array_keys($this->pre_modules);
     }
+    /**
+     * Add a post module
+     * @param string $module
+     */
+    public function addPostModule($module)
+    {
+        $this->post_modules[$module] = true;
+    }
+
+    /**
+     * Remove a post module
+     * @param string $module
+     */
+    public function removePostModule($module)
+    {
+        unset($this->post_modules[$module]);
+    }
+
+    /**
+     * Check if a modules is in the post modules
+     * @param string $module
+     * @return bool
+     */
+    public function hasPostModule($module)
+    {
+        return array_key_exists($module, $this->post_modules);
+    }
+
+    /**
+     * Add multiple post modules at once.<br />
+     * @param array $modules
+     */
+    public function addPostModules($modules)
+    {
+        foreach( $modules as $module )
+        {
+            $this->post_modules[$module] = true;
+        }
+    }
+
+    /**
+     * Remove all the post modules
+     */
+    public function clearPostModules()
+    {
+        $this->post_modules = array();
+    }
+
+    /**
+     * Returns an indexed array (sorting not important) of post modules
+     * @return array
+     */
+    public function getPostModules()
+    {
+        return array_keys($this->post_modules);
+    }
 }

@@ -12,7 +12,7 @@ class ImageView
      * @param \Rest\Server $rest
      * @return \Rest\Server
      */
-    public function show(\Rest\Server $rest)
+    public function execute(\Rest\Server $rest)
     {
         // get the result value object to output
         $response_data = @$rest->getParameter("response");

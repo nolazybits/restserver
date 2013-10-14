@@ -10,10 +10,9 @@ interface View
 {
     /**
      * Render this view
-     * Show($restServer)
      * @param \Rest\Server $restServer
      * @return \Rest\Server
      */
-	function show(\Rest\Server $restServer) ;
+	function execute(\Rest\Server $restServer) ;
 }
 ?>
