@@ -7,7 +7,7 @@ namespace Rest\Modules;
  * Time: 3:40 PM
  */
 class OptionMethod
-    implements \Rest\Controller
+    implements \Rest\Modules
 {
     const MODULE_OPT_PRETTY = "module_opt_method";
 

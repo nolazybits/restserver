@@ -1,5 +1,5 @@
 <?php
-namespace Rest;
+namespace Rest\Modules;
 
 /**
  * User: xavier
@@ -7,6 +7,7 @@ namespace Rest;
  * Time: 3:33 PM
  */
 interface Modules
+    extends \Rest\Controller
 {
     /**
      * @param \Rest\Server $server

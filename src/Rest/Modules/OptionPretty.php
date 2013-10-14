@@ -9,7 +9,7 @@ namespace Rest\Modules;
  * To change this template use File | Settings | File Templates.
  */
 class OptionPretty
-    implements \Rest\Controller
+    implements \Rest\Modules
 {
     const MODULE_OPT_PRETTY = "module_opt_pretty";
 

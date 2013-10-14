@@ -29,11 +29,11 @@ class MapResource
      * @param \string $method       http method
      * @param \string $uri          Resource URI
      * @param \string $class        class and or function qualifying string
-     * @param \array $extensions    supported extension for this resource. used to override server defaults
-     * @param \array $pre_modules   modules to be executed before the mapped action
-     * @param \array $post_modules  modules to be executed after the mapped action
+     * @param \array $options       supported extension for this resource. used to override server defaults
+     * \array $pre_modules   modules to be executed before the mapped action
+     * \array $post_modules  modules to be executed after the mapped action
      */
-    public function __construct($method, $uri, $class, $extensions = null, $pre_modules = null, $post_modules = null)
+    public function __construct($method, $uri, $class, $options)
     {
         $this->method       = $method;
         $this->uri          = $uri;

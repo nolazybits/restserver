@@ -145,30 +145,38 @@ class Server
 
     /**
      * Maps a Method and URL for a Class
-     * @param \Rest\MapResource $map_resource defines a uri mapping
+     *
+     * @param string $method The http method to be associated
+     * @param string $uri The URL to be associated
+     * @param string $class The name of the class to be called, it must implement RestAction
+     * @param array $options An associative array specifying options for this resource<br />
+     * Has the following format:<br />
+     * [<br />
+     *     'extensions' => ['json', 'xml'], <br />
+     *     'pre_modules' => ['', ''],<br />
+     *     'post_modules => ['', ''],<br />
+     *     'cors' => true/false<br />
+     * ]
+     *
      * @return \Rest\Server
      */
-    public function addMap( $map_resource )
+    public function addMap( $method, $uri, $class, $options )
     {
-        $this->map[$map_resource->getMethod()][$map_resource->getUri()] = $map_resource;
+        $map_resource = new MapResource($method, $uri, $class, $options);
+        $this->map[$method][$uri] = $map_resource;
         return $this ;
     }
 
     /**
-    * Get the class for specified method and uri
-    * @param string $method
-    * @param string $uri
-    * @return \Rest\MapResource
-    */
-    public function getMap($method,$uri)
+     * Get the class for specified method and uri
+     * @param string $method The http method of the resource to retrieve
+     * @param string $uri The uri of the resource to retrieve
+     * @param string $extension
+     * @return \Rest\MapResource
+     * TODO Remove the server specific logic (checking extensions, ...) as this function must always return the MapResource if it is in the hashmap
+     */
+    public function getMap($method, $uri, $extension)
     {
-        //  check the server handle the requested extension
-        $extension = $this->request->getExtension();
-        if( $extension && !$this->hasExtension($extension) )
-        {
-            return false;
-        }
-
         $maps = $this->map[$method];
         if(count($maps) < 1) { return false; }
         foreach($maps as $pattern=>$mapResource)
@@ -193,7 +201,6 @@ class Server
         //  TODO check for map specific extension
             if(preg_match("%^".implode("/", $map ).(!$extension?"":".".$extension)."$%",$uri) )
             {
-                $this->setMatch($parts);
                 return $mapResource;
             }
         }
@@ -205,7 +212,8 @@ class Server
      * @param array $map
      * @return \Rest\Server
      */
-    public function setMatch($map) {
+    public function setMatch($map)
+    {
         $this->matched = $map;
         return $this;
     }
@@ -214,7 +222,8 @@ class Server
      * Get matched pattern
      * @return array
      */
-    public function getMatch() {
+    public function getMatch()
+    {
         return $this->matched;
     }
 
@@ -222,7 +231,8 @@ class Server
     * Return last class name from RestServer stack trace
     * @return string 
     */
-    public function lastClass() {
+    public function lastClass()
+    {
         $i = count($this->stack);
         return $this->stack[$i - 1];
     }
@@ -237,11 +247,21 @@ class Server
         $modules = $this->getPreModules();
         $this->executeModules($modules);
 
+        //  check the server handle the requested extension
+        $extension = $this->request->getExtension();
+        if( $extension && !$this->hasExtension($extension) )
+        {
+            return false;
+        }
+
         //  This is the class name to call
-        $mapResource = $this->getMap($this->getRequest()->getMethod(),$this->getQuery()) ;
+        $mapResource = $this->getMap($this->getRequest()->getMethod(),$this->getQuery(), $extension);
         $responseClass = null;
         if( $mapResource )
         {
+            //  we have found a match for this uri
+            $this->setMatch( explode("/", $mapResource->getUri()) );
+            //  set the response class to be called
             $responseClass = $mapResource->getClass();
         }
 
