@@ -22,6 +22,6 @@ class PostEtag
     {
         $response = $server->getResponse();
         $etag = md5($response->getResponse());
-        $response->addHeader("ETag: $etag");
+        $response->addHeader('ETag: W/"'.$etag.'"');
     }
 }
