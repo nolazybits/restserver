@@ -44,6 +44,9 @@ class StatusCodes
     //  Indicates that the resource requested is no longer available and will not be available again.
     const ERROR_GONE                = '410 Gone';
 
+    //  Indicates that the resource requested is no longer available and will not be available again.
+    const ERROR_PRECONDITION_FAILED= '412 Precondition Failed';
+
     const ERROR_SERVER              = '500 Internal Server Error';
 
 }

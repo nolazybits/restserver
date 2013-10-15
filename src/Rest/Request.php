@@ -17,6 +17,11 @@ class Request
     private $post;
     private $files;
 
+    /**
+     * @var array
+     */
+    private $headers;
+
     private $input;
 
     /**
@@ -43,6 +48,8 @@ class Request
         $this->get = $_GET ? $_GET : array();
         $this->post = $_POST ? $_POST : array();
         $this->files = $_FILES ? $_FILES : array();
+
+        $this->headers = getallheaders();
 
     }
 
@@ -107,6 +114,27 @@ class Request
         return false;
     }
 
+    /**
+     * Return an associative array of all the HTTP headers in the current request
+     * @return array An associative array of all the HTTP headers in the current request
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @param $header
+     * @return null
+     */
+    public function getHeader($header)
+    {
+        if ( isset($this->headers[$header]) )
+        {
+            return $this->headers[$header];
+        }
+        return null;
+    }
 
     /**
      * Get parameters sent with GET (url parameters)
