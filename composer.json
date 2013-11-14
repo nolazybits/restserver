@@ -1,0 +1,42 @@
+{
+    "name": "zeflasher/rest",
+    "description": "Rest client/server",
+    "type": "library",
+    "keywords": ["rest", "api"],
+    "homepage": "https://github.com/zeflasher/restserver",
+    "license": "MIT",
+    "authors": 
+    [
+      {
+	"name": "Xavier Martin",
+	"email": "zeflasher+resth@gmail.com",
+	"homepage": "http://dev.webbymx.net",
+	"role": "Developer"
+      }
+    ],
+    "support": 
+    {
+      "email": "zeflasher+rest@gmail.com",
+      "issues": "https://github.com/zeflasher/restserver/issues",
+      "wiki": "https://github.com/zeflasher/restserver/wiki",
+      "source": "https://github.com/zeflasher/restserver"
+    },
+    "autoload": 
+    {
+      "psr-0":
+      {
+	"Rest\\": "src/"
+      }
+    },
+    "repositories":
+    [
+      {
+	"type": "vcs",
+	"url": "https://github.com/zeflasher/restserver.git"
+      }
+    ],
+    "require": 
+    {
+        "php": ">=5.3.0"
+    }
+}
