@@ -4,7 +4,7 @@ namespace Rest\Views;
 /**
  *
  */
-class ImageView
+class Image
     implements \Rest\View
 {
     /**
