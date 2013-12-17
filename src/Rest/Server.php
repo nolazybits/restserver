@@ -334,12 +334,12 @@ class Server
             $response = explode("::",$response);
             if ( count($response) == 2)
             {
-                $object =  new $response[0];
+                $object =  new $response[0]($this);
                 $method = $response[1];
             }
             else
             {
-                $object = new $response[0];
+                $object = new $response[0]($this);
                 $method = "execute";
             }
         }
