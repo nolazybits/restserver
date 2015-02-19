@@ -181,6 +181,10 @@ class Request
             //  $_PUT already set, returns it
             if ( isset($_PUT) )
             {
+				if (!is_null($k))
+				{
+					return $_PUT[$k];
+				}
                 return $_PUT;
             }
 
