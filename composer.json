@@ -3,23 +3,23 @@
     "description": "Rest client/server",
     "type": "library",
     "keywords": ["rest", "api"],
-    "homepage": "https://github.com/zeflasher/restserver",
+    "homepage": "https://github.com/nolazybits/restserver",
     "license": "MIT",
     "authors": 
     [
       {
 	"name": "Xavier Martin",
-	"email": "zeflasher+resth@gmail.com",
-	"homepage": "http://dev.webbymx.net",
+	"email": "nolazybits+resth@gmail.com",
+	"homepage": "http://nolazybits.com",
 	"role": "Developer"
       }
     ],
     "support": 
     {
-      "email": "zeflasher+rest@gmail.com",
-      "issues": "https://github.com/zeflasher/restserver/issues",
-      "wiki": "https://github.com/zeflasher/restserver/wiki",
-      "source": "https://github.com/zeflasher/restserver"
+      "email": "nolazybits+rest@gmail.com",
+      "issues": "https://github.com/nolazybits/restserver/issues",
+      "wiki": "https://github.com/nolazybits/restserver/wiki",
+      "source": "https://github.com/nolazybits/restserver"
     },
     "autoload": 
     {
@@ -32,7 +32,7 @@
     [
       {
 	"type": "vcs",
-	"url": "https://github.com/zeflasher/restserver.git"
+	"url": "https://github.com/nolazybits/restserver.git"
       }
     ],
     "require": 
