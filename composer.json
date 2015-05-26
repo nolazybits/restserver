@@ -1,5 +1,5 @@
 {
-    "name": "zeflasher/rest",
+    "name": "nolazybits/rest",
     "description": "Rest client/server",
     "type": "library",
     "keywords": ["rest", "api"],
